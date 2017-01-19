@@ -11,8 +11,8 @@ install:
   - bundle install
 build: off
 test_script:
-  - bundle exec rake test
-#  - bundle exec rake test TESTOPTS=-v
+  - bundle exec rake test TESTOPTS=-v
+#  - bundle exec rake test
 
 branches:
   only:
