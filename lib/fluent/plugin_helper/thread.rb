@@ -14,10 +14,13 @@
 #    limitations under the License.
 #
 
+require 'fluent/clock'
+
 module Fluent
   module PluginHelper
     module Thread
       THREAD_DEFAULT_WAIT_SECONDS = 1
+      THREAD_SHUTDOWN_HARD_TIMEOUT_IN_TESTS = 100 # second
 
       # stop     : mark callback thread as stopped
       # shutdown : [-]
@@ -38,7 +41,9 @@ module Fluent
       end
 
       def thread_wait_until_stop
+        timeout_at = Fluent::Clock.now + THREAD_SHUTDOWN_HARD_TIMEOUT_IN_TESTS
         until @_threads_mutex.synchronize{ @_threads.values.reduce(true){|r,t| r && ![:_fluentd_plugin_helper_thread_running] } }
+          raise "sleep timeout in shutting down threads" if Fluent::Clock.now > timeout_at
           sleep 0.1
         end
       end
