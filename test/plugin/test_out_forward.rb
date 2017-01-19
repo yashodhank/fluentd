@@ -234,8 +234,8 @@ EOL
 
     target_input_driver.run(expect_records: 2) do
       d.run do
-        emit_events.each do |tag, time, record|
-          d.feed(tag, time, record)
+        emit_events.each do |tag, t, record|
+          d.feed(tag, t, record)
         end
       end
     end
