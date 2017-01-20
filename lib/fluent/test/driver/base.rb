@@ -194,7 +194,7 @@ module Fluent
 
           return_value = nil
           begin
-            Timeout.timeout(timeout * 1.1) do |sec|
+            Timeout.timeout(timeout * 2) do |sec|
               return_value = block.call if block_given?
             end
           rescue Timeout::Error
