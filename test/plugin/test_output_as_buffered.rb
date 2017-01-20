@@ -730,10 +730,12 @@ class BufferedOutputTest < Test::Unit::TestCase
         assert_equal rand_records, es.size
         @i.emit_events("test.tag", es)
 
-        assert{ @i.buffer.stage.size == 0 && (@i.buffer.queue.size == 1 || @i.buffer.dequeued.size == 1 || ary.size > 0) }
+        waiting(10) do
+          sleep 0.1 until @i.buffer.stage.size == 0 # make sure that the emitted es is enqueued by "flush_mode immediate"
+        end
 
         waiting(10) do
-          Thread.pass until @i.buffer.queue.size == 0 && @i.buffer.dequeued.size == 0
+          sleep 0.1 until @i.buffer.queue.size == 0 && @i.buffer.dequeued.size == 0
         end
 
         assert_equal rand_records, ary.size
