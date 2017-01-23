@@ -85,7 +85,11 @@ module Fluent
         @_event_loop_mutex.synchronize do
           @_event_loop_attached_watchers.reverse.each do |w|
             if w.attached?
-              w.detach
+              begin
+                w.detach
+              rescue => e
+                log.warn "unexpected error while detaching event loop watcher", error: e
+              end
             end
           end
         end
