@@ -660,7 +660,6 @@ EOL
     assert timers.include?(:out_forward_heartbeat_request)
 
     mock(usock).send("\0", 0, Socket.pack_sockaddr_in(TARGET_PORT, '127.0.0.1')).once
-    # timer.disable # call send_heartbeat at just once
     d.instance.send(:on_timer)
   end
 
