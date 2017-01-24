@@ -473,7 +473,7 @@ plugin_id:test_filter\tplugin_category:filter\ttype:test_filter\toutput_plugin:f
       # flush few times to check steps
       2.times do
         output.force_flush
-        sleep 0.1
+        sleep 0.1 until output.buffer.queued?
       end
       response = JSON.parse(get("http://127.0.0.1:#{@port}/api/plugins.json"))
       test_out_fail_write_response = response["plugins"][1]
