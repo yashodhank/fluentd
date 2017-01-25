@@ -261,7 +261,9 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       assert_equal [ 'test.tag.1', event_time('2016-04-13 18:33:13').to_i, {"name" => "moris", "age" => 36, "message" => "data2"} ], written[1]
       assert_equal [ 'test.tag.1', event_time('2016-04-13 18:33:32').to_i, {"name" => "moris", "age" => 36, "message" => "data3"} ], written[2]
 
-      assert{ @i.log.out.logs.any?{|l| l.include?("[warn]: retry succeeded by secondary.") } }
+      logs = @i.log.out.logs
+      waiting(4){ sleep 0.1 until logs.any?{|l| l.include?("[warn]: retry succeeded by secondary.") } }
+      assert{ logs.any?{|l| l.include?("[warn]: retry succeeded by secondary.") } }
     end
 
     test 'secondary can do non-delayed commit even if primary do delayed commit' do
@@ -326,7 +328,9 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       assert_equal [ 'test.tag.1', event_time('2016-04-13 18:33:13').to_i, {"name" => "moris", "age" => 36, "message" => "data2"} ], written[1]
       assert_equal [ 'test.tag.1', event_time('2016-04-13 18:33:32').to_i, {"name" => "moris", "age" => 36, "message" => "data3"} ], written[2]
 
-      assert{ @i.log.out.logs.any?{|l| l.include?("[warn]: retry succeeded by secondary.") } }
+      logs = @i.log.out.logs
+      waiting(4){ sleep 0.1 until logs.any?{|l| l.include?("[warn]: retry succeeded by secondary.") } }
+      assert{ logs.any?{|l| l.include?("[warn]: retry succeeded by secondary.") } }
     end
 
     test 'secondary plugin can do delayed commit if primary do it' do
@@ -403,7 +407,9 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
 
       assert_nil @i.retry
 
-      assert{ @i.log.out.logs.any?{|l| l.include?("[warn]: retry succeeded by secondary.") } }
+      logs = @i.log.out.logs
+      waiting(4){ sleep 0.1 until logs.any?{|l| l.include?("[warn]: retry succeeded by secondary.") } }
+      assert{ logs.any?{|l| l.include?("[warn]: retry succeeded by secondary.") } }
     end
 
     test 'secondary plugin can do delayed commit even if primary does not do it' do
@@ -480,7 +486,9 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
 
       assert_nil @i.retry
 
-      assert{ @i.log.out.logs.any?{|l| l.include?("[warn]: retry succeeded by secondary.") } }
+      logs = @i.log.out.logs
+      waiting(4){ sleep 0.1 until logs.any?{|l| l.include?("[warn]: retry succeeded by secondary.") } }
+      assert{ logs.any?{|l| l.include?("[warn]: retry succeeded by secondary.") } }
     end
 
     test 'secondary plugin can do delayed commit even if primary does not do it, and non-committed chunks will be rollbacked by primary' do
@@ -568,6 +576,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
 
       assert @i.retry
       logs = @i.log.out.logs
+      waiting(4){ sleep 0.1 until logs.select{|l| l.include?("[warn]: failed to flush the buffer chunk, timeout to commit.") }.size == 2 }
       assert{ logs.select{|l| l.include?("[warn]: failed to flush the buffer chunk, timeout to commit.") }.size == 2 }
     end
 
@@ -631,6 +640,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       assert_equal 3, (@i.next_flush_time - Time.now)
 
       logs = @i.log.out.logs
+      waiting(4){ sleep 0.1 until logs.any?{|l| l.include?("[warn]: failed to flush the buffer with secondary output.") } }
       assert{ logs.any?{|l| l.include?("[warn]: failed to flush the buffer with secondary output.") } }
     end
   end
