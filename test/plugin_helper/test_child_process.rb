@@ -681,7 +681,11 @@ class ChildProcessTest < Test::Unit::TestCase
       assert callback_called
       assert exit_status
 
+      # This test sometimes fails on TravisCI
+      #    with [nil, 11] # SIGSEGV
+      # or with [1, nil]  # ???
       assert_equal [nil, 3, true, ""], [exit_status.exitstatus, exit_status.termsig, File.exist?(@temp_path), str] # SIGQUIT
+      # SIGSEGV looks a kind of BUG of ruby...
     end
 
     test 'calls on_exit_callback for each process exits for interval call using on_exit_callback' do
