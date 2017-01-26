@@ -658,7 +658,7 @@ class ChildProcessTest < Test::Unit::TestCase
       block_exits = false
       callback_called = false
       exit_status = nil
-      args = ['-e', 'sleep ARGV[0].to_i; puts "yay"; File.unlink ARGV[1]', '25', @temp_path]
+      args = ['-e', 'sleep ARGV[0].to_i; puts "yay"; File.unlink ARGV[1]', '100', @temp_path]
       cb = ->(status){ exit_status = status; callback_called = true }
 
       str = nil
@@ -668,7 +668,8 @@ class ChildProcessTest < Test::Unit::TestCase
         @d.child_process_execute(:st1, "ruby", arguments: args, mode: [:read], on_exit_callback: cb) do |readio|
           pid = @d.instance_eval{ child_process_id }
           Process.kill(:QUIT, pid)
-          Process.kill(:QUIT, pid) rescue nil # once more to kill certainly
+          Process.kill(:QUIT, pid) rescue nil # once more to send kill
+          Process.kill(:QUIT, pid) rescue nil # just like sync
           str = readio.read.chomp rescue nil # empty string before EOF
           block_exits = true
         end
@@ -680,10 +681,7 @@ class ChildProcessTest < Test::Unit::TestCase
       assert callback_called
       assert exit_status
 
-      assert_equal [nil, 3], [exit_status.exitstatus, exit_status.termsig] # SIGQUIT
-
-      assert File.exist?(@temp_path)
-      assert_equal "", str
+      assert_equal [nil, 3, true, ""], [exit_status.exitstatus, exit_status.termsig, File.exist?(@temp_path), str] # SIGQUIT
     end
 
     test 'calls on_exit_callback for each process exits for interval call using on_exit_callback' do
