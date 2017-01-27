@@ -43,11 +43,15 @@ module Fluent
       def thread_wait_until_stop
         timeout_at = Fluent::Clock.now + THREAD_SHUTDOWN_HARD_TIMEOUT_IN_TESTS
         until @_threads_mutex.synchronize{ @_threads.values.reduce(true){|r,t| r && !t[:_fluentd_plugin_helper_thread_running] } }
-          if Fluent::Clock.now > timeout_at
-            running_threads = @_threads.values.select{|t| t[:_fluentd_plugin_helper_thread_running]}.map{|t| t[:_fluentd_plugin_helper_thread_title] }
-            raise "sleep timeout in shutting down threads, still running:#{running_threads.join(',')}"
-          end
+          break if Fluent::Clock.now > timeout_at
           sleep 0.1
+        end
+        @_threads_mutex.synchronize{ @_threads.values }.each do |t|
+          if t.alive?
+            puts "going to kill the thread still running: #{t[:_fluentd_plugin_helper_thread_title]}"
+            t.kill rescue nil
+            t[:_fluentd_plugin_helper_thread_running] = false
+          end
         end
       end
 
@@ -78,13 +82,13 @@ module Fluent
             thread_exit = true
             raise
           ensure
-            if ::Thread.current.alive? && !thread_exit
-              log.warn "thread doesn't exit correctly (killed or other reason)", plugin: self.class, title: title, thread: ::Thread.current, error: $!
-            end
             @_threads_mutex.synchronize do
               @_threads.delete(::Thread.current.object_id)
             end
             ::Thread.current[:_fluentd_plugin_helper_thread_running] = false
+            if ::Thread.current.alive? && !thread_exit
+              log.warn "thread doesn't exit correctly (killed or other reason)", plugin: self.class, title: title, thread: ::Thread.current, error: $!
+            end
           end
         end
         thread.abort_on_exception = true

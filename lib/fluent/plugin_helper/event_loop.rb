@@ -50,6 +50,11 @@ module Fluent
       def event_loop_wait_until_stop
         timeout_at = Fluent::Clock.now + EVENT_LOOP_SHUTDOWN_TIMEOUT
         sleep(0.1) while event_loop_running? && Fluent::Clock.now < timeout_at
+        if @_event_loop_running
+          puts "terminating event_loop forcedly"
+          @_event_loop.stop rescue nil
+          @_event_loop_running = true
+        end
       end
 
       def event_loop_running?

@@ -154,6 +154,10 @@ module Fluent
           show_errors_if_exists.call(:shutdown,        ->(){ @instance.shutdown unless @instance.shutdown? })
           show_errors_if_exists.call(:after_shutdown,  ->(){ @instance.after_shutdown unless @instance.after_shutdown? })
 
+          if @instance.respond_to?(:server_wait_until_stop)
+            @instance.server_wait_until_stop
+          end
+
           if @instance.respond_to?(:event_loop_wait_until_stop)
             @instance.event_loop_wait_until_stop
           end
@@ -162,10 +166,6 @@ module Fluent
 
           if @instance.respond_to?(:thread_wait_until_stop)
             @instance.thread_wait_until_stop
-          end
-
-          if @instance.respond_to?(:server_wait_until_stop)
-            @instance.server_wait_until_stop
           end
 
           show_errors_if_exists.call(:terminate, ->(){ @instance.terminate unless @instance.terminated? })
