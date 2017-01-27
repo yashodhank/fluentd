@@ -135,8 +135,7 @@ class TailInputTest < Test::Unit::TestCase
 
       d.run(expect_emits: 1) do
         File.open("#{TMP_DIR}/tail.txt", "ab") {|f|
-          f.puts "test3"
-          f.puts "test4"
+          f.puts "test3\ntest4"
         }
       end
 
