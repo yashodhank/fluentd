@@ -244,10 +244,22 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       first_failure = @i.retry.start
 
       # retry_timeout == 60(sec), retry_secondary_threshold == 0.8
-
-      now = first_failure + 60 * 0.8 + 2
-
+      now = first_failure + 60 * 0.8 + 1 # to step from primary to secondary
       Timecop.freeze( now )
+
+      unless @i.retry.secondary?
+        @i.enqueue_thread_wait
+        @i.flush_thread_wakeup
+        waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
+
+        prev_write_count = @i.write_count
+        prev_num_errors = @i.num_errors
+
+        # next step is on secondary
+        now = first_failure + 60 * 0.8 + 10
+        Timecop.freeze( now )
+      end
+
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
       waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
@@ -299,7 +311,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
 
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
-      waiting(4){ Thread.pass until @i.write_count > 0 && @i.num_errors > 0 }
+      waiting(4){ sleep 0.1 until @i.write_count > 0 && @i.num_errors > 0 }
 
       assert{ @i.buffer.queue.size > 0 }
       assert{ @i.buffer.queue.first.metadata.tag == 'test.tag.1' }
@@ -313,13 +325,25 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       first_failure = @i.retry.start
 
       # retry_timeout == 60(sec), retry_secondary_threshold == 0.8
-
-      now = first_failure + 60 * 0.8 + 1
-
+      now = first_failure + 60 * 0.8 + 1 # to step from primary to secondary
       Timecop.freeze( now )
+
+      unless @i.retry.secondary?
+        @i.enqueue_thread_wait
+        @i.flush_thread_wakeup
+        waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
+
+        prev_write_count = @i.write_count
+        prev_num_errors = @i.num_errors
+
+        # next step is on secondary
+        now = first_failure + 60 * 0.8 + 10
+        Timecop.freeze( now )
+      end
+
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
-      waiting(4){ Thread.pass until @i.write_count > prev_write_count }
+      waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
 
       assert{ @i.write_count > prev_write_count }
       assert{ @i.num_errors == prev_num_errors }
@@ -367,7 +391,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
 
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
-      waiting(4){ Thread.pass until @i.write_count > 0 && @i.num_errors > 0 }
+      waiting(4){ sleep 0.1 until @i.write_count > 0 && @i.num_errors > 0 }
 
       assert{ @i.buffer.queue.size > 0 }
       assert{ @i.buffer.queue.first.metadata.tag == 'test.tag.1' }
@@ -381,13 +405,25 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       first_failure = @i.retry.start
 
       # retry_timeout == 60(sec), retry_secondary_threshold == 0.8
-
-      now = first_failure + 60 * 0.8 + 1
-
+      now = first_failure + 60 * 0.8 + 1 # to step from primary to secondary
       Timecop.freeze( now )
+
+      unless @i.retry.secondary?
+        @i.enqueue_thread_wait
+        @i.flush_thread_wakeup
+        waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
+
+        prev_write_count = @i.write_count
+        prev_num_errors = @i.num_errors
+
+        # next step is on secondary
+        now = first_failure + 60 * 0.8 + 10
+        Timecop.freeze( now )
+      end
+
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
-      waiting(4){ Thread.pass until @i.write_count > prev_write_count }
+      waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
 
       assert{ @i.write_count > prev_write_count }
       assert{ @i.num_errors == prev_num_errors }
@@ -446,7 +482,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
 
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
-      waiting(4){ Thread.pass until @i.write_count > 0 && @i.num_errors > 0 }
+      waiting(4){ sleep 0.1 until @i.write_count > 0 && @i.num_errors > 0 }
 
       assert{ @i.buffer.queue.size > 0 }
       assert{ @i.buffer.queue.first.metadata.tag == 'test.tag.1' }
@@ -460,13 +496,25 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       first_failure = @i.retry.start
 
       # retry_timeout == 60(sec), retry_secondary_threshold == 0.8
-
-      now = first_failure + 60 * 0.8 + 1
-
+      now = first_failure + 60 * 0.8 + 1 # to step from primary to secondary
       Timecop.freeze( now )
+
+      unless @i.retry.secondary?
+        @i.enqueue_thread_wait
+        @i.flush_thread_wakeup
+        waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
+
+        prev_write_count = @i.write_count
+        prev_num_errors = @i.num_errors
+
+        # next step is on secondary
+        now = first_failure + 60 * 0.8 + 10
+        Timecop.freeze( now )
+      end
+
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
-      waiting(4){ Thread.pass until @i.write_count > prev_write_count }
+      waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
 
       assert{ @i.write_count > prev_write_count }
       assert{ @i.num_errors == prev_num_errors }
@@ -525,7 +573,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
 
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
-      waiting(4){ Thread.pass until @i.write_count > 0 && @i.num_errors > 0 }
+      waiting(4){ sleep 0.1 until @i.write_count > 0 && @i.num_errors > 0 }
 
       assert{ @i.buffer.queue.size == 2 }
       assert{ @i.buffer.queue.first.metadata.tag == 'test.tag.1' }
@@ -549,7 +597,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
 
-      waiting(4){ Thread.pass until chunks.size == 2 }
+      waiting(4){ sleep 0.1 until chunks.size == 2 }
 
       assert{ @i.write_count > prev_write_count }
       assert{ @i.num_errors == prev_num_errors }
@@ -612,7 +660,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
 
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
-      waiting(4){ Thread.pass until @i.write_count > 0 && @i.num_errors > 0 }
+      waiting(4){ sleep 0.1 until @i.write_count > 0 && @i.num_errors > 0 }
 
       assert{ @i.buffer.queue.size > 0 }
       assert{ @i.buffer.queue.first.metadata.tag == 'test.tag.1' }
@@ -632,7 +680,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       Timecop.freeze( now )
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
-      waiting(4){ Thread.pass until @i.write_count > prev_write_count }
+      waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
 
       assert{ @i.write_count > prev_write_count }
       assert{ @i.num_errors > prev_num_errors }
@@ -684,7 +732,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
 
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
-      waiting(4){ Thread.pass until @i.write_count > 0 && @i.num_errors > 0 }
+      waiting(4){ sleep 0.1 until @i.write_count > 0 && @i.num_errors > 0 }
 
       assert{ @i.buffer.queue.size > 0 }
       assert{ @i.buffer.queue.first.metadata.tag == 'test.tag.1' }
@@ -702,7 +750,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
         Timecop.freeze( now )
         @i.enqueue_thread_wait
         @i.flush_thread_wakeup
-        waiting(4){ Thread.pass until @i.write_count > prev_write_count }
+        waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
 
         assert{ @i.write_count > prev_write_count }
 
@@ -755,7 +803,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
 
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
-      waiting(4){ Thread.pass until @i.write_count > 0 && @i.num_errors > 0 }
+      waiting(4){ sleep 0.1 until @i.write_count > 0 && @i.num_errors > 0 }
 
       assert{ @i.buffer.queue.size > 0 }
       assert{ @i.buffer.queue.first.metadata.tag == 'test.tag.1' }
@@ -780,7 +828,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
         Timecop.freeze( now )
         @i.enqueue_thread_wait
         @i.flush_thread_wakeup
-        waiting(4){ Thread.pass until @i.write_count > prev_write_count }
+        waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
 
         assert{ @i.write_count > prev_write_count }
         assert{ @i.num_errors > prev_num_errors }
@@ -812,7 +860,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
         Timecop.freeze( now )
         @i.enqueue_thread_wait
         @i.flush_thread_wakeup
-        waiting(4){ Thread.pass until @i.write_count > prev_write_count }
+        waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
 
         assert{ @i.write_count > prev_write_count }
         assert{ @i.num_errors > prev_num_errors }
