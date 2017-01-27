@@ -89,7 +89,7 @@ class TestDriverTest < ::Test::Unit::TestCase
           end
         end
       end
-      assert_raise "yaaaaaaaaaay!" do
+      assert_raise RuntimeError.new("yaaaaaaaaaay!") do
         d.end_if{ false }
         d.run(timeout: 3) do
           sleep 0.1 until d.stop?

@@ -39,7 +39,7 @@ class ClockTest < ::Test::Unit::TestCase
     end
 
     test 'Clock.return raises an error if it is called in block' do
-      assert_raise "invalid return while running code in blocks" do
+      assert_raise RuntimeError.new("invalid return while running code in blocks") do
         Fluent::Clock.freeze do
           Fluent::Clock.return
         end
