@@ -900,6 +900,8 @@ class TailInputTest < Test::Unit::TestCase
           f.puts "test4"
         }
       end
+      # This test sometimes fails and it shows a potential bug of in_tail
+      # https://github.com/fluent/fluentd/issues/1434
       events = d.events
       assert_equal(2, events.length)
       assert_equal({"message" => "test3"}, events[0][2])
