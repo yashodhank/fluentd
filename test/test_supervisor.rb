@@ -143,8 +143,9 @@ class SupervisorTest < ::Test::Unit::TestCase
 
     sleep 1
 
-    debug_msg = '[debug]: fluentd supervisor process get SIGUSR1' + "\n"
-    assert{ $log.out.logs.first.end_with?(debug_msg) }
+    debug_msg = '[debug]: fluentd supervisor process get SIGUSR1'
+    logs = $log.out.logs
+    assert{ logs.any?{|log| log.include?(debug_msg) } }
   ensure
     $log.out.reset if $log && $log.out && $log.out.respond_to?(:reset)
   end
