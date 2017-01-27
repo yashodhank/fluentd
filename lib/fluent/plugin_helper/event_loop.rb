@@ -48,7 +48,8 @@ module Fluent
       end
 
       def event_loop_wait_until_stop
-        sleep(0.1) while event_loop_running?
+        timeout_at = Fluent::Clock.now + EVENT_LOOP_SHUTDOWN_TIMEOUT
+        sleep(0.1) while event_loop_running? && Fluent::Clock.now < timeout_at
       end
 
       def event_loop_running?
@@ -93,7 +94,21 @@ module Fluent
             end
           end
         end
+
+        super
+      end
+
+      def after_shutdown
         timeout_at = Fluent::Clock.now + EVENT_LOOP_SHUTDOWN_TIMEOUT
+        @_event_loop_mutex.synchronize do
+          @_event_loop.watchers.reverse.each do |w|
+            begin
+              w.detach
+            rescue => e
+              log.warn "unexpected error while detaching event loop watcher", error: e
+            end
+          end
+        end
         while @_event_loop_running
           if Fluent::Clock.now >= timeout_at
             log.warn "event loop does NOT exit until hard timeout."
