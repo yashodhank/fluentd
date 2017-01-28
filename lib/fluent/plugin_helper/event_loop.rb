@@ -52,6 +52,7 @@ module Fluent
         sleep(0.1) while event_loop_running? && Fluent::Clock.now < timeout_at
         if @_event_loop_running
           puts "terminating event_loop forcedly"
+          caller.each{|bt| puts "\t#{bt}" }
           @_event_loop.stop rescue nil
           @_event_loop_running = true
         end
