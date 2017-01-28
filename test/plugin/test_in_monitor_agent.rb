@@ -472,7 +472,6 @@ plugin_id:test_filter\tplugin_category:filter\ttype:test_filter\toutput_plugin:f
         # output.force_flush calls #submit_flush_all, but #submit_flush_all skips to call #submit_flush_once when @retry exists.
         # So that forced flush in retry state should be done by calling #submit_flush_once directly.
         output.submit_flush_once
-        p(here: "just after force_flush", retry_state: output.instance_eval{ @retry })
         sleep 0.1 until output.buffer.queued?
       end
       response = JSON.parse(get("http://127.0.0.1:#{@port}/api/plugins.json"))
@@ -483,7 +482,7 @@ plugin_id:test_filter\tplugin_category:filter\ttype:test_filter\toutput_plugin:f
       assert_equal(expected_test_out_fail_write_response, test_out_fail_write_response)
       assert{ response_retry.has_key?("steps") }
       # it's very hard to check exact retry count (because retries are called by output flush thread scheduling)
-      assert{ response_retry_count > 1 && response_retry["steps"] > 0 && response_retry_count == response_retry["steps"] + 1 }
+      assert{ response_retry_count >= 1 && response_retry["steps"] >= 0 && response_retry_count == response_retry["steps"] + 1 }
     end
   end
 end
