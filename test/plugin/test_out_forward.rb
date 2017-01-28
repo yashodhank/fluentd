@@ -639,7 +639,7 @@ EOL
     node = d.instance.nodes.first
     assert_equal Fluent::Plugin::ForwardOutput::NoneHeartbeatNode, node.class
 
-    d.instance.start
+    d.instance_start
     assert_nil d.instance.instance_variable_get(:@loop)   # no HeartbeatHandler, or HeartbeatRequestTimer
     assert_nil d.instance.instance_variable_get(:@thread) # no HeartbeatHandler, or HeartbeatRequestTimer
 
@@ -651,7 +651,7 @@ EOL
   test 'heartbeat_type_udp' do
     @d = d = create_driver(CONFIG + "\nheartbeat_type udp")
 
-    d.instance.start
+    d.instance_start
     usock = d.instance.instance_variable_get(:@usock)
     servers = d.instance.instance_variable_get(:@_servers)
     timers = d.instance.instance_variable_get(:@_timers)
