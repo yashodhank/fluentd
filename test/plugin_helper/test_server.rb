@@ -645,7 +645,7 @@ class ServerPluginHelperTest < Test::Unit::TestCase
       sock.write "foo\n"
       sock.close
 
-      waiting(10){ sleep 0.1 until received.bytesize == 4 || errors.size == 1 }
+      waiting(10){ sleep 0.1 until received.bytesize == 4 && errors.size == 1 }
       assert_equal "foo\n", received
       assert_equal 1, errors.size
       assert_equal "BUG: this event is disabled for udp: data", errors.first.message
@@ -667,7 +667,7 @@ class ServerPluginHelperTest < Test::Unit::TestCase
       sock.write "foo\n"
       sock.close
 
-      waiting(10){ sleep 0.1 until received.bytesize == 4 || errors.size == 1 }
+      waiting(10){ sleep 0.1 until received.bytesize == 4 && errors.size == 1 }
       assert_equal "foo\n", received
       assert_equal 1, errors.size
       assert_equal "BUG: this event is disabled for udp: write_complete", errors.first.message
@@ -689,7 +689,7 @@ class ServerPluginHelperTest < Test::Unit::TestCase
       sock.write "foo\n"
       sock.close
 
-      waiting(10){ sleep 0.1 until received.bytesize == 4 || errors.size == 1 }
+      waiting(10){ sleep 0.1 until received.bytesize == 4 && errors.size == 1 }
       assert_equal "foo\n", received
       assert_equal 1, errors.size
       assert_equal "BUG: this event is disabled for udp: close", errors.first.message
