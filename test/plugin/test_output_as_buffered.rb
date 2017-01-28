@@ -642,6 +642,22 @@ class BufferedOutputTest < Test::Unit::TestCase
         ary.reject!{|e| true }
       end
     end
+  end
+
+  sub_test_case 'with much longer flush_interval' do
+    setup do
+      hash = {
+        'flush_mode' => 'interval',
+        'flush_interval' => 3000,
+        'flush_thread_count' => 1,
+        'flush_thread_burst_interval' => 0.01,
+        'chunk_limit_size' => 1024,
+      }
+      @i = create_output(:buffered)
+      @i.configure(config_element('ROOT','',{},[config_element('buffer','',hash)]))
+      @i.start
+      @i.after_start
+    end
 
     test 'flush_at_shutdown work well when plugin is shutdown' do
       ary = []
@@ -658,16 +674,15 @@ class BufferedOutputTest < Test::Unit::TestCase
       (1024 * 0.9 / event_size).to_i.times do |i|
         @i.emit_events("test.tag", Fluent::ArrayEventStream.new([ [t, r] ]))
       end
-      assert{ @i.buffer.queue.size == 0 && ary.size == 0 }
+      queue_size = @i.buffer.queue.size
+      assert{ queue_size == 1 && ary.size == 0 }
 
       @i.stop
       @i.before_shutdown
       @i.shutdown
       @i.after_shutdown
 
-      waiting(10) do
-        Thread.pass until ary.size == 1
-      end
+      waiting(10){ sleep 0.1 until ary.size == 1 }
       assert_equal [tag,t,r].to_json * (1024 * 0.9 / event_size), ary.first
     end
   end
