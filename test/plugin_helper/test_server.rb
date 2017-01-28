@@ -27,12 +27,12 @@ class ServerPluginHelperTest < Test::Unit::TestCase
   end
 
   teardown do
-    @d.stopped? || @d.stop
-    @d.before_shutdown? || @d.before_shutdown
-    @d.shutdown? || @d.shutdown
-    @d.after_shutdown? || @d.after_shutdown
-    @d.closed? || @d.close
-    @d.terminated? || @d.terminate
+    (@d.stopped? || @d.stop) rescue nil
+    (@d.before_shutdown? || @d.before_shutdown) rescue nil
+    (@d.shutdown? || @d.shutdown) rescue nil
+    (@d.after_shutdown? || @d.after_shutdown) rescue nil
+    (@d.closed? || @d.close) rescue nil
+    (@d.terminated? || @d.terminate) rescue nil
 
     @socket_manager_server.close
     if @socket_manager_server.is_a?(String) && File.exist?(@socket_manager_path)
