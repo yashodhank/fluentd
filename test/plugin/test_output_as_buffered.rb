@@ -675,7 +675,7 @@ class BufferedOutputTest < Test::Unit::TestCase
         @i.emit_events("test.tag", Fluent::ArrayEventStream.new([ [t, r] ]))
       end
       queue_size = @i.buffer.queue.size
-      assert{ queue_size == 1 && ary.size == 0 }
+      assert{ queue_size == 0 && ary.size == 0 }
 
       @i.stop
       @i.before_shutdown
