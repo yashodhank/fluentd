@@ -244,10 +244,9 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       first_failure = @i.retry.start
 
       # retry_timeout == 60(sec), retry_secondary_threshold == 0.8
-      now = first_failure + 60 * 0.8 + 1 # to step from primary to secondary
-      Timecop.freeze( now )
+      Timecop.freeze( @i.retry.next_time + 1 ) # to step from primary to secondary
 
-      unless @i.retry.secondary?
+      until @i.retry.secondary?
         @i.enqueue_thread_wait
         @i.flush_thread_wakeup
         waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
@@ -256,8 +255,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
         prev_num_errors = @i.num_errors
 
         # next step is on secondary
-        now = first_failure + 60 * 0.8 + 10
-        Timecop.freeze( now )
+        Timecop.freeze( @i.retry.next_time + 1 )
       end
 
       @i.enqueue_thread_wait
@@ -325,10 +323,9 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       first_failure = @i.retry.start
 
       # retry_timeout == 60(sec), retry_secondary_threshold == 0.8
-      now = first_failure + 60 * 0.8 + 1 # to step from primary to secondary
-      Timecop.freeze( now )
+      Timecop.freeze( @i.retry.next_time + 1 ) # to step from primary to secondary
 
-      unless @i.retry.secondary?
+      until @i.retry.secondary?
         @i.enqueue_thread_wait
         @i.flush_thread_wakeup
         waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
@@ -337,8 +334,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
         prev_num_errors = @i.num_errors
 
         # next step is on secondary
-        now = first_failure + 60 * 0.8 + 10
-        Timecop.freeze( now )
+        Timecop.freeze( @i.retry.next_time + 1 )
       end
 
       @i.enqueue_thread_wait
@@ -405,10 +401,9 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       first_failure = @i.retry.start
 
       # retry_timeout == 60(sec), retry_secondary_threshold == 0.8
-      now = first_failure + 60 * 0.8 + 1 # to step from primary to secondary
-      Timecop.freeze( now )
+      Timecop.freeze( @i.retry.next_time + 1 ) # to step from primary to secondary
 
-      unless @i.retry.secondary?
+      until @i.retry.secondary?
         @i.enqueue_thread_wait
         @i.flush_thread_wakeup
         waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
@@ -417,8 +412,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
         prev_num_errors = @i.num_errors
 
         # next step is on secondary
-        now = first_failure + 60 * 0.8 + 10
-        Timecop.freeze( now )
+        Timecop.freeze( @i.retry.next_time + 1 )
       end
 
       @i.enqueue_thread_wait
@@ -496,10 +490,9 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       first_failure = @i.retry.start
 
       # retry_timeout == 60(sec), retry_secondary_threshold == 0.8
-      now = first_failure + 60 * 0.8 + 1 # to step from primary to secondary
-      Timecop.freeze( now )
+      Timecop.freeze( @i.retry.next_time + 1 ) # to step from primary to secondary
 
-      unless @i.retry.secondary?
+      until @i.retry.secondary?
         @i.enqueue_thread_wait
         @i.flush_thread_wakeup
         waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
@@ -508,8 +501,7 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
         prev_num_errors = @i.num_errors
 
         # next step is on secondary
-        now = first_failure + 60 * 0.8 + 10
-        Timecop.freeze( now )
+        Timecop.freeze( @i.retry.next_time + 1 )
       end
 
       @i.enqueue_thread_wait
