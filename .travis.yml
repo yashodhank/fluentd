@@ -1,7 +1,7 @@
 language: ruby
 cache: bundler
 
-script: bundle exec rake test TESTOPTS=-v TEST=test/plugin/test_output_as_buffered_secondary.rb
+script: bundle exec rake test TESTOPTS=-v
 # 0
 
 # http://rubies.travis-ci.org/
