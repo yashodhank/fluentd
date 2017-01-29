@@ -482,7 +482,8 @@ plugin_id:test_filter\tplugin_category:filter\ttype:test_filter\toutput_plugin:f
       assert_equal(expected_test_out_fail_write_response, test_out_fail_write_response)
       assert{ response_retry.has_key?("steps") }
       # it's very hard to check exact retry count (because retries are called by output flush thread scheduling)
-      assert{ response_retry_count >= 1 && response_retry["steps"] >= 0 && response_retry_count == response_retry["steps"] + 1 }
+      assert{ response_retry_count >= 1 && response_retry["steps"] >= 0 }
+      assert{ response_retry_count == response_retry["steps"] + 1 }
     end
   end
 end
