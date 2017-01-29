@@ -241,8 +241,13 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       prev_write_count = @i.write_count
       prev_num_errors = @i.num_errors
 
-      until @i.retry.secondary?
-        Timecop.freeze( @i.retry.next_time + 1 ) # to step from primary to secondary
+      first_failure = @i.retry.start
+
+      # retry_timeout == 60(sec), retry_secondary_threshold == 0.8
+      now = first_failure + 60 * 0.8 + 1 # to step from primary to secondary
+      Timecop.freeze( now )
+
+      unless @i.retry.secondary?
         @i.enqueue_thread_wait
         @i.flush_thread_wakeup
         waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
@@ -250,10 +255,10 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
         prev_write_count = @i.write_count
         prev_num_errors = @i.num_errors
 
+        # next step is on secondary
+        now = first_failure + 60 * 0.8 + 10
+        Timecop.freeze( now )
       end
-
-      # next step is on secondary
-      Timecop.freeze( @i.retry.next_time + 1 )
 
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
@@ -317,18 +322,24 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       prev_write_count = @i.write_count
       prev_num_errors = @i.num_errors
 
-      until @i.retry.secondary?
-        Timecop.freeze( @i.retry.next_time + 1 ) # to step from primary to secondary
+      first_failure = @i.retry.start
+
+      # retry_timeout == 60(sec), retry_secondary_threshold == 0.8
+      now = first_failure + 60 * 0.8 + 1 # to step from primary to secondary
+      Timecop.freeze( now )
+
+      unless @i.retry.secondary?
         @i.enqueue_thread_wait
         @i.flush_thread_wakeup
         waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
 
         prev_write_count = @i.write_count
         prev_num_errors = @i.num_errors
-      end
 
-      # next step is on secondary
-      Timecop.freeze( @i.retry.next_time + 1 )
+        # next step is on secondary
+        now = first_failure + 60 * 0.8 + 10
+        Timecop.freeze( now )
+      end
 
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
@@ -391,18 +402,24 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       prev_write_count = @i.write_count
       prev_num_errors = @i.num_errors
 
-      until @i.retry.secondary?
-        Timecop.freeze( @i.retry.next_time + 1 ) # to step from primary to secondary
+      first_failure = @i.retry.start
+
+      # retry_timeout == 60(sec), retry_secondary_threshold == 0.8
+      now = first_failure + 60 * 0.8 + 1 # to step from primary to secondary
+      Timecop.freeze( now )
+
+      unless @i.retry.secondary?
         @i.enqueue_thread_wait
         @i.flush_thread_wakeup
         waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
 
         prev_write_count = @i.write_count
         prev_num_errors = @i.num_errors
-      end
 
-      # next step is on secondary
-      Timecop.freeze( @i.retry.next_time + 1 )
+        # next step is on secondary
+        now = first_failure + 60 * 0.8 + 10
+        Timecop.freeze( now )
+      end
 
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
@@ -476,18 +493,24 @@ class BufferedOutputSecondaryTest < Test::Unit::TestCase
       prev_write_count = @i.write_count
       prev_num_errors = @i.num_errors
 
-      until @i.retry.secondary?
-        Timecop.freeze( @i.retry.next_time + 1 ) # to step from primary to secondary
+      first_failure = @i.retry.start
+
+      # retry_timeout == 60(sec), retry_secondary_threshold == 0.8
+      now = first_failure + 60 * 0.8 + 1 # to step from primary to secondary
+      Timecop.freeze( now )
+
+      unless @i.retry.secondary?
         @i.enqueue_thread_wait
         @i.flush_thread_wakeup
         waiting(4){ sleep 0.1 until @i.write_count > prev_write_count }
 
         prev_write_count = @i.write_count
         prev_num_errors = @i.num_errors
-      end
 
-      # next step is on secondary
-      Timecop.freeze( @i.retry.next_time + 1 )
+        # next step is on secondary
+        now = first_failure + 60 * 0.8 + 10
+        Timecop.freeze( now )
+      end
 
       @i.enqueue_thread_wait
       @i.flush_thread_wakeup
