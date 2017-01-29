@@ -630,17 +630,15 @@ class ChildProcessTest < Test::Unit::TestCase
 
       str = nil
 
-      Timeout.timeout(TEST_DEADLOCK_TIMEOUT) do
-        pid = nil
-        @d.child_process_execute(:st1, "ruby", arguments: args, mode: [:read], on_exit_callback: cb) do |readio|
-          pid = @d.instance_eval{ child_process_id }
-          str = readio.read.chomp
-          block_exits = true
-        end
-        sleep TEST_WAIT_INTERVAL_FOR_BLOCK_RUNNING while @d.child_process_exist?(pid) # to get exit status
-        sleep TEST_WAIT_INTERVAL_FOR_BLOCK_RUNNING until block_exits
-        sleep TEST_WAIT_INTERVAL_FOR_BLOCK_RUNNING until callback_called
+      pid = nil
+      @d.child_process_execute(:st1, "ruby", arguments: args, mode: [:read], on_exit_callback: cb) do |readio|
+        pid = @d.instance_eval{ child_process_id }
+        str = readio.read.chomp
+        block_exits = true
       end
+      waiting(TEST_DEADLOCK_TIMEOUT){ sleep TEST_WAIT_INTERVAL_FOR_BLOCK_RUNNING while @d.child_process_exist?(pid) } # to get exit status
+      waiting(TEST_DEADLOCK_TIMEOUT){ sleep TEST_WAIT_INTERVAL_FOR_BLOCK_RUNNING until block_exits }
+      waiting(TEST_DEADLOCK_TIMEOUT){ sleep TEST_WAIT_INTERVAL_FOR_BLOCK_RUNNING until callback_called }
 
       assert callback_called
       assert exit_status
@@ -663,20 +661,18 @@ class ChildProcessTest < Test::Unit::TestCase
 
       str = nil
 
-      Timeout.timeout(TEST_DEADLOCK_TIMEOUT) do
-        pid = nil
-        @d.child_process_execute(:st1, "ruby", arguments: args, mode: [:read], on_exit_callback: cb) do |readio|
-          pid = @d.instance_eval{ child_process_id }
-          Process.kill(:QUIT, pid)
-          Process.kill(:QUIT, pid) rescue nil # once more to send kill
-          Process.kill(:QUIT, pid) rescue nil # just like sync
-          str = readio.read.chomp rescue nil # empty string before EOF
-          block_exits = true
-        end
-        sleep TEST_WAIT_INTERVAL_FOR_BLOCK_RUNNING while @d.child_process_exist?(pid) # to get exit status
-        sleep TEST_WAIT_INTERVAL_FOR_BLOCK_RUNNING until block_exits
-        sleep TEST_WAIT_INTERVAL_FOR_BLOCK_RUNNING until callback_called
+      pid = nil
+      @d.child_process_execute(:st1, "ruby", arguments: args, mode: [:read], on_exit_callback: cb) do |readio|
+        pid = @d.instance_eval{ child_process_id }
+        Process.kill(:QUIT, pid)
+        Process.kill(:QUIT, pid) rescue nil # once more to send kill
+        Process.kill(:QUIT, pid) rescue nil # just like sync
+        str = readio.read.chomp rescue nil # empty string before EOF
+        block_exits = true
       end
+      waiting(TEST_DEADLOCK_TIMEOUT){ sleep TEST_WAIT_INTERVAL_FOR_BLOCK_RUNNING while @d.child_process_exist?(pid) } # to get exit status
+      waiting(TEST_DEADLOCK_TIMEOUT){ sleep TEST_WAIT_INTERVAL_FOR_BLOCK_RUNNING until block_exits }
+      waiting(TEST_DEADLOCK_TIMEOUT){ sleep TEST_WAIT_INTERVAL_FOR_BLOCK_RUNNING until callback_called }
 
       assert callback_called
       assert exit_status
